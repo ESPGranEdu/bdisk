@@ -5,6 +5,7 @@ if [ $(id -u) != 0 ]; then
     echo "Debes de tener permisos de administrador para ejecutar este script"
     exit 1
 fi
+
 # Primero le pedimos al usuario que introduzca el disco
 # al cual se le va a hacer la copia de segutidad
 
