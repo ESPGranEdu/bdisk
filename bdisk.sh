@@ -14,9 +14,9 @@ echo -n "Introduce el disco al que se le quiere hacer una copia --> "; read disc
 # Variables y arrays para sacar correctamente la informacion del disco
 
 disco_f=$(echo $disco | cut -f3 -d/)
-num_part=$(lsblk -f $disco | tr -d "├─" | egrep "$disco_f[1-128]" | wc -l)
-mapfile -t part < <(lsblk -f $disco | tr -d "├─" | egrep "$disco_f[1-128]" | awk '{print $1}' )
-mapfile -t tipo_part < <(lsblk -f $disco | tr -d "├─" | egrep "$disco_f[1-128]" | awk '{print $2}')
+num_part=$(lsblk -f $disco | tr -d "├─" | egrep "$disco_f[1-9]" | wc -l)
+mapfile -t part < <(lsblk -f $disco | tr -d "├─" | egrep "$disco_f[1-9]" | awk '{print $1}' )
+mapfile -t tipo_part < <(lsblk -f $disco | tr -d "├─" | egrep "$disco_f[1-9]" | awk '{print $2}')
 
 # Funciones para detectar si el disco proporcinado existe
 # Y crear la tabla de particiones del disco escogido
