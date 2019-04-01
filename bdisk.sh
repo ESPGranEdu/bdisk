@@ -50,13 +50,13 @@ buscar_disco $disco
 
 # Backup de la tabla de particiones
 
-backup_tabla_particiones $disco &> /dev/null
+backup_tabla_particiones $disco  
 
 # Backup de las particiones
 
 for X in $(seq 0 $(($num_part-1)));
 do 
-    echo "partclone.${tipo_part[$X]} -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz"
+    partclone.${tipo_part[$X]} -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
 done
 
 exit 0
