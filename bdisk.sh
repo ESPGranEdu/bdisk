@@ -44,10 +44,8 @@ if [[ -f "Tabla_particiones_$disco_f.img" ]]; then
 else
     if [[ "$tipo_tabla" == "gpt" ]]; then
         dd if=$disco of="Tabla_particiones_$disco_f.img" bs=512 count=34 &> /dev/null
-        elif [[ "$tipo_tabla" == "mbr" ]]; then
+    elif [[ "$tipo_tabla" == "mbr" ]]; then
         dd if=$disco of="Tabla_particiones_$disco_f.img" bs=512 count=1 &> /dev/null
-        # Si se encuentra el disco, se realizara la copia de seguridad
-        # de la tabla de particiones y de las particiones del disco
     fi
     echo -e "\e[1;92mCreada copia de la tabla de particiones del disco\e[0m \e[1;93m$disco\e[0m"
 fi
