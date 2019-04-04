@@ -1,10 +1,6 @@
 #!/bin/bash
 # Cargar el contenido de la carpet modules
 
-# TODO -->
-#  --> Detectar que particiones estan montadas, y desmontarla a la hora
-#  --> Arreglar el bug a la hora de crear la tabla de particiones, que estando ya creada sigue creando la copia
-
 if [ ! -d modules  ]; then
     echo -e "\e[1;91mNo se encuentra la carpeta \"modules\"\e[0m"
     exit 1
