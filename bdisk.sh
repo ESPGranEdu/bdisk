@@ -39,7 +39,17 @@ mapfile -t tipo_part < <(lsblk -lf $disco | egrep "$disco_f([1-9]|[1-8][0-9]|9[0
 # para evitar operaciones de escritura y lectura si a lo que
 # se le va a hacer una copia de seguridad es un disco SSD
 
-crear_backup $disco $disco_f $tipo_tabla
+
+    if [ -f "Tabla_particiones_$disco_f.img" ]; then
+        echo -e "\e[1;33mYa existe la tabla de particiones del disco $1\e[0m"
+    else
+        if [ "$tipo_tabla" == "gpt" ]; then
+            dd if=$disco of="Tabla_particiones_$disco_f.img" bs=512 count=34 &> /dev/null
+        elif [ "$tipo_tabla" == "dos" ]; then
+            dd if=$disco of="Tabla_particiones_$disco_f.img" bs=512 count=1 &> /dev/null
+        fi
+    fi
+        echo -e "\e[1;92mCreada copia de la tabla de particiones del disco\e[0m \e[1;93m$1\e[0m"
 
 # Antes de realizar el backup de las particiones, le mostramos al usuario las particiones
 # a las que se le va a hacer una copia de seguridad
