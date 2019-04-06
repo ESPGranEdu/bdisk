@@ -13,13 +13,13 @@ fi
 
 # Comprobamos si el usuario tiene permisos de super usuarios
 
-if [ $(id -u) != 0 ]; then
+if [ "$(id -u)" != 0 ]; then
     echo "Debes de tener permisos de administrador para ejecutar este script"
     exit 1
 fi 
 
 # Primero le pedimos al usuario que introduzca el disco
-# al cual se le va a hacer la copia de segutidad
+# al cual se le va a hacer la copia de seguridad
 
 echo -en "\e[1mIntroduce el disco al que se le quiere hacer una copia --> \e[0m"; read -e disco
 
@@ -75,23 +75,32 @@ done
 # copia, si no, se hacen las copias pero no de las particiones que estan montadas
 
 echo ""
+
 if [ $aviso_montura != 0 ]; then
     echo -en "\e[1;95mSe han detectado particiones montadas, si se desea realizar la copia de seguridad
-se van a desmontar las particiones para ello ¿desea proseguir?[S/n]: \e[0m"; read user
-    if [ "$user" == "S" || "$user" == "s" || "$user" == "" ]; then
-        for disk in $(seq 0 $(($num_part-1))); then
+se van a desmontar las particiones. ¿desea proseguir?[S/n]: \e[0m"; read user
+    if [[ "$user" == "S" || "$user" == "s" || "$user" == "" ]]; then
+        
+        for disk in $(seq 0 $((num_part-1)));
         do
             umount "/dev/${part[$disk]}"
         done
+        
+        for X in $(seq 0 $((num_part-1)));
+        do
+            partclone.${tipo_part[$X]} -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
+        done
+    
+    exit 0
+    else
+        echo -en "\e[1m¿Desea realizar la copia de las siguientes particiones? [S/n]: \e[0m"; read user
     fi
-else
-    echo -en "\e[1m¿Desea realizar la copia de las siguientes particiones? [S/n]: \e[0m"; read user
 fi
 
-if [ "$user" == "S" || "$user" == "s" || "$user" == "" ]; then
+if [[ "$user" == "S" || "$user" == "s" || "$user" == "" ]]; then
     # Backup de las particiones
     
-    for X in $(seq 0 $(($num_part-1)));
+    for X in $(seq 0 $((num_part-1)));
     do
         partclone.${tipo_part[$X]} -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
     done
