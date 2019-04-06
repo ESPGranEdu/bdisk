@@ -23,3 +23,4 @@ function crear_backup(){
     	echo -e "\e[1;92mCreada copia de la tabla de particiones del disco\e[0m \e[1;93m$1\e[0m"
     fi
 }
+
