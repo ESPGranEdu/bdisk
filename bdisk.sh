@@ -1,4 +1,9 @@
 #!/bin/bash
+# Limpiamos la terminal y exportamos una opción para que fzf muestre un titulo
+
+clear
+export FZF_DEFAULT_OPTS='--height 40% '
+
 # Cargar el contenido de la carpet modules
 
 if [ ! -d modules  ]; then
@@ -21,7 +26,8 @@ fi
 # Primero le pedimos al usuario que introduzca el disco
 # al cual se le va a hacer la copia de seguridad
 
-echo -en "\e[1mIntroduce el disco al que se le quiere hacer una copia --> \e[0m"; read -e disco
+echo -en "\e[1mIntroduce el disco al que se le quiere hacer una copia --> \e[0m"; 
+disco=$(du -a /dev | grep -E "sd[a-z]\b" | awk '{print $2}' | fzf)
 
 # Miramos si el disco que ha proporcionado el usuario existe en el equipo
 
@@ -92,10 +98,13 @@ se van a desmontar las particiones. ¿desea proseguir?[S/n]: \e[0m"; read user
         done
     
     exit 0
-    else
-        echo -en "\e[1m¿Desea realizar la copia de las siguientes particiones? [S/n]: \e[0m"; read user
+    else  
+    echo -e "\e[1;91mAbortando...\e[0m"
+    exit 1        
     fi
 fi
+
+echo -en "\e[1m¿Desea realizar la copia de las siguientes particiones? [S/n]: \e[0m"; read user
 
 if [[ "$user" == "S" || "$user" == "s" || "$user" == "" ]]; then
     # Backup de las particiones
