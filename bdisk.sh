@@ -2,9 +2,9 @@
 # Limpiamos la terminal y exportamos una opción para que fzf muestre un titulo
 
 clear
-export FZF_DEFAULT_OPTS='--height 40% '
+export FZF_DEFAULT_OPTS='--height 10%'
 
-# Cargar el contenido de la carpet modules
+# Cargar el contenido de la carpeta modules
 
 if [ ! -d modules  ]; then
     echo -e "\e[1;91mNo se encuentra la carpeta \"modules\"\e[0m"
@@ -63,8 +63,8 @@ do
         tipo_part[$disk]="desconocido"
     fi
     
-    # Aqui se comprueba si la particion esta montada o no, debido a que si esta montada, partclone no podra realizar correctamente
-    # la copia de seguridad del disco duro por este motivo
+    # Aqui se comprueba si la particion esta montada o no, debido a que si esta montada, partclone no podra 
+    # realizar correctamente la copia de seguridad del disco duro por este motivo
 
     if grep -q ${part[$disk]} /proc/mounts; then
     	echo -e "\e[1;93m/dev/${part[$disk]}\e[0m \e[1mde tipo\e[0m \e[1;96m${tipo_part[$disk]}\e[0m \e[1;91mMONTADO\e[0m"
