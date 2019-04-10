@@ -3,4 +3,6 @@ TODO:
 
 # Arreglar el bug a la hora de crear la tabla de particiones, que estando ya creada sigue creando la copia: "ARREGLADO"
 
-# Crear script que compruebe las dependencias que faltan e instalarlas según la distribucion:
+# Realizar la copia de la particion, independientemente de que se desconozca el tipo: "IMPLEMENTADO"
+
+# Añadir modulo que compruebe las dependencias que faltan e instalarlas según la distribucion:

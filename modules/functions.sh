@@ -1,6 +1,5 @@
 # Aqui iran las funciones que se cargaran al script para añadir modularidad
 
-
 function comprobar() {
     lsblk $1 &> /dev/null
     

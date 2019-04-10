@@ -1,8 +1,69 @@
-# Comprobar si las depdendencias necesarias estan instaladas en el sistema,
-# en caso de que no esten, se instalan
-function comprobar(){
-    dpkg -l | grep $1 > /dev/null 2>&1 ||{
-        echo >&2 -e "\e[1;91mFalta la dependencia: \"$1\"\e[0m"
-    }
+# Este script comprueba si las dependencias necesarias estan instaladas,
+# en el caso de que no lo esten se instalaran. Depende de las distribución
+# se ejecutara la funcion respectivamente
+
+
+function suseCheck(){
+    local _packages="$@"
+    local _package
+
+
+    for _package in ${_packages[*]};
+    do
+        hash $_package 2>&1 /dev/null
+        if (( $? != 0 )); then
+            echo -e "\e[1;93mFalta la dependencia \"$_package\", en breves se instalara...\e[0m"
+            zypper install $_package  &> /dev/null
+        fi
+    done
+
 }
-## Debian
+
+function yumCheck(){
+    local _packages="$@"
+    local _package
+
+
+    for _package in ${_packages[*]};
+    do
+        hash $_package 2>&1 /dev/null
+        if (( $? != 0 )); then
+            echo -e "\e[1;93mFalta la dependencia \"$_package\", en breves se instalara...\e[0m"
+            yum install $_package  &> /dev/null
+        fi
+    done
+
+}
+
+
+function archCheck(){
+    local _packages="$@"
+    local _package
+
+
+    for _package in ${_packages[*]};
+    do
+        hash $_package 2>&1 /dev/null
+        if (( $? != 0 )); then
+            echo -e "\e[1;93mFalta la dependencia \"$_package\", en breves se instalara...\e[0m"
+            pacman -Sy $_package --noconfirm &> /dev/null
+        fi
+    done
+}
+
+function debianCheck(){
+    local _packages="$@"
+    local _package
+
+
+    for _package in ${_packages[*]};
+    do
+        hash $_package 2>&1 /dev/null
+        if (( $? != 0 )); then
+            echo -e "\e[1;93mFalta la dependencia \"$_package\", en breves se instalara...\e[0m"
+            apt install -y $_package &> /dev/null
+        fi
+    done
+
+}
+

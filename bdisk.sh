@@ -1,8 +1,7 @@
 #!/bin/bash
-# Limpiamos la terminal y exportamos una opción para que fzf muestre un titulo
+# Limpiamos el contenido de la terminal actual para mayor visualizacion
 
 clear
-export FZF_DEFAULT_OPTS='--height 10%'
 
 # Cargar el contenido de la carpeta modules
 
@@ -11,6 +10,9 @@ if [ ! -d modules  ]; then
     exit 1
 elif [ ! -f modules/functions.sh ]; then
     echo -e "\e[1;91mError al cargar \"functions.sh\"\e[0m"
+    exit 1
+elif [! -f modules/check_dependencies.sh ]; then
+    echo -e "\e[1;91mError al cargar \"check_dependencies.sh\"\e[0m"
     exit 1
 else
     source modules/*
@@ -26,8 +28,8 @@ fi
 # Primero le pedimos al usuario que introduzca el disco
 # al cual se le va a hacer la copia de seguridad
 
-echo -en "\e[1mIntroduce el disco al que se le quiere hacer una copia --> \e[0m"; 
-disco=$(du -a /dev | grep -E "sd[a-z]\b" | awk '{print $2}' | fzf)
+disco=$(du -a /dev | grep -E "sd[a-z]\b" | awk '{print $2}' | fzf --reverse \
+--prompt="Selecciona el disco al que quieres hacerle un backup --> ")
 
 # Miramos si el disco que ha proporcionado el usuario existe en el equipo
 
@@ -86,21 +88,28 @@ if [ $aviso_montura != 0 ]; then
     echo -en "\e[1;95mSe han detectado particiones montadas, si se desea realizar la copia de seguridad
 se van a desmontar las particiones. ¿desea proseguir?[S/n]: \e[0m"; read user
     if [[ "$user" == "S" || "$user" == "s" || "$user" == "" ]]; then
-        
+        # Desmontamos las particiones que esten montadas
+
         for disk in $(seq 0 $((num_part-1)));
         do
             umount "/dev/${part[$disk]}"
         done
         
+        # Hacemos la copia de seguridad
+
         for X in $(seq 0 $((num_part-1)));
         do
-            partclone.${tipo_part[$X]} -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
+            if [ "${tipo_part[$X]}" == "desconocido" ]; then
+                partclone.dd -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
+            else
+                partclone.${tipo_part[$X]} -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
+            fi
         done
     
-    exit 0
+        exit 0
     else  
-    echo -e "\e[1;91mAbortando...\e[0m"
-    exit 1        
+        echo -e "\e[1;91mAbortando...\e[0m"
+        exit 1        
     fi
 fi
 
@@ -108,10 +117,14 @@ echo -en "\e[1m¿Desea realizar la copia de las siguientes particiones? [S/n]: \
 
 if [[ "$user" == "S" || "$user" == "s" || "$user" == "" ]]; then
     # Backup de las particiones
-    
+
     for X in $(seq 0 $((num_part-1)));
     do
-        partclone.${tipo_part[$X]} -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
+        if [ "${tipo_part[$X]}" == "desconocido" ]; then
+            partclone.dd -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
+        else
+            partclone.${tipo_part[$X]} -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
+        fi
     done
     
     exit 0
