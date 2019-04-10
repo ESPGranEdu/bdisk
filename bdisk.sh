@@ -11,11 +11,14 @@ if [ ! -d modules  ]; then
 elif [ ! -f modules/functions.sh ]; then
     echo -e "\e[1;91mError al cargar \"functions.sh\"\e[0m"
     exit 1
-elif [! -f modules/check_dependencies.sh ]; then
+elif [ ! -f modules/check_dependencies.sh ]; then
     echo -e "\e[1;91mError al cargar \"check_dependencies.sh\"\e[0m"
     exit 1
 else
-    source modules/*
+    for modules in $(ls modules/);
+    do
+        source modules/$modules
+    done
 fi
 
 # Comprobamos si el usuario tiene permisos de super usuarios
