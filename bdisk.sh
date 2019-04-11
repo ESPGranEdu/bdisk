@@ -31,8 +31,8 @@ fi
 # Primero le pedimos al usuario que introduzca el disco
 # al cual se le va a hacer la copia de seguridad
 
-disco=$(du -a /dev | grep -E "sd[a-z]\b" | awk '{print $2}' | fzf --reverse \
---prompt="Selecciona el disco al que quieres hacerle un backup --> ")
+disco=$(fdisk -l | grep -E "/dev/sd[a-z]:" | awk '{print $2,$3,$4}' | tr ":" "\t" | sed 's/,$//' | fzf --reverse \
+--prompt="Selecciona el disco al que quieres hacerle un backup --> " | awk '{print $1}')
 
 # Miramos si el disco que ha proporcionado el usuario existe en el equipo
 

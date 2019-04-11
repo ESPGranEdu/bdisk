@@ -19,7 +19,7 @@ function suseCheck(){
 
 }
 
-function yumCheck(){
+function fedoCheck(){
     local _packages="$@"
     local _package
 
@@ -29,7 +29,7 @@ function yumCheck(){
         hash $_package 2>&1 /dev/null
         if (( $? != 0 )); then
             echo -e "\e[1;93mFalta la dependencia \"$_package\", en breves se instalara...\e[0m"
-            yum install $_package  &> /dev/null
+            dnf install $_package  &> /dev/null
         fi
     done
 
