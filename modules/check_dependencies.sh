@@ -52,7 +52,8 @@ function archCheck(){
 }
 
 function debianCheck(){
-    local _packages="$@"
+    dependencies=("fzy" "partclone")
+    local _packages="${dependencies[$@]}"
     local _package
 
 

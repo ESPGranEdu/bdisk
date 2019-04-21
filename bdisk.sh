@@ -1,5 +1,5 @@
 #!/bin/bash
-# Limpiamos el contenido de la terminal actual para mayor visualizacion
+# Limpiamos el contenido de la terminal actual para mayor visualizacion 
 
 clear
 
@@ -10,6 +10,7 @@ if [ ! -d modules  ]; then
     exit 1
 elif [ ! -f modules/functions.sh ]; then
     echo -e "\e[1;91mError al cargar \"functions.sh\"\e[0m"
+
     exit 1
 elif [ ! -f modules/check_dependencies.sh ]; then
     echo -e "\e[1;91mError al cargar \"check_dependencies.sh\"\e[0m"
@@ -31,8 +32,10 @@ fi
 # Primero le pedimos al usuario que introduzca el disco
 # al cual se le va a hacer la copia de seguridad
 
-disco=$(fdisk -l | grep -E "/dev/sd[a-z]:" | awk '{print $2,$3,$4}' | tr ":" "\t" | sed 's/,$//' | fzf --reverse \
---prompt="Selecciona el disco al que quieres hacerle un backup --> " | awk '{print $1}')
+if hash fzf; then
+    disco=$(fdisk -l | grep -E "/dev/sd[a-z]:" | awk '{print $2,$3,$4}' | tr ":" "\t" | sed 's/,$//' | fzf --reverse --prompt="Selecciona el disco al que quieres hacerle un backup --> " | awk '{print $1}') 
+else
+    disco=$(fdisk -l | grep -E "/dev/sd[a-z]:" | awk '{print $2,$3,$4}' | tr ":" "\t" | sed 's/,$//' | fzy --prompt="Selecciona el disco al que quieres hacerle un backup --> " | awk '{print $1}') 
 
 # Miramos si el disco que ha proporcionado el usuario existe en el equipo
 
@@ -40,7 +43,7 @@ comprobar $disco
 
 # Variables y arrays para sacar correctamente la informacion del disco
 
-aviso_montura=0
+aviso_montaje=0
 tipo_tabla=$(fdisk -l $disco | grep -oP "dos|gpt")
 disco_f=$(echo $disco | cut -f3 -d/)
 num_part=$(lsblk -lf $disco | grep -E "$disco_f([1-9]|[1-8][0-9]|9[0-9]|1[01][0-9]|12[0-8])" | wc -l)
@@ -73,7 +76,7 @@ do
 
     if grep -q ${part[$disk]} /proc/mounts; then
     	echo -e "\e[1;93m/dev/${part[$disk]}\e[0m \e[1mde tipo\e[0m \e[1;96m${tipo_part[$disk]}\e[0m \e[1;91mMONTADO\e[0m"
-        aviso_montura=1
+        aviso_montaje=1
 	else
     	echo -e "\e[1;93m/dev/${part[$disk]}\e[0m \e[1mde tipo\e[0m \e[1;96m${tipo_part[$disk]}\e[0m"
     fi
@@ -87,15 +90,18 @@ done
 
 echo ""
 
-if [ $aviso_montura != 0 ]; then
+if [ $aviso_montaje != 0 ]; then
     echo -en "\e[1;95mSe han detectado particiones montadas, si se desea realizar la copia de seguridad
 se van a desmontar las particiones. ¿desea proseguir?[S/n]: \e[0m"; read user
     if [[ "$user" == "S" || "$user" == "s" || "$user" == "" ]]; then
+        
         # Desmontamos las particiones que esten montadas
 
         for disk in $(seq 0 $((num_part-1)));
         do
-            umount "/dev/${part[$disk]}"
+            if grep -q ${part[$disk]} /proc/mounts; then
+                umount "/dev/${part[$disk]}"	
+	    fi
         done
         
         # Hacemos la copia de seguridad
@@ -103,7 +109,7 @@ se van a desmontar las particiones. ¿desea proseguir?[S/n]: \e[0m"; read user
         for X in $(seq 0 $((num_part-1)));
         do
             if [ "${tipo_part[$X]}" == "desconocido" ]; then
-                partclone.dd -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
+                partclone.dd -Ns /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
             else
                 partclone.${tipo_part[$X]} -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
             fi
@@ -124,7 +130,7 @@ if [[ "$user" == "S" || "$user" == "s" || "$user" == "" ]]; then
     for X in $(seq 0 $((num_part-1)));
     do
         if [ "${tipo_part[$X]}" == "desconocido" ]; then
-            partclone.dd -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
+            partclone.dd -Ns /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
         else
             partclone.${tipo_part[$X]} -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
         fi
