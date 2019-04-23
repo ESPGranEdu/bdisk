@@ -32,10 +32,7 @@ fi
 # Primero le pedimos al usuario que introduzca el disco
 # al cual se le va a hacer la copia de seguridad
 
-if hash fzf; then
-    disco=$(fdisk -l | grep -E "/dev/sd[a-z]:" | awk '{print $2,$3,$4}' | tr ":" "\t" | sed 's/,$//' | fzf --reverse --prompt="Selecciona el disco al que quieres hacerle un backup --> " | awk '{print $1}') 
-else
-    disco=$(fdisk -l | grep -E "/dev/sd[a-z]:" | awk '{print $2,$3,$4}' | tr ":" "\t" | sed 's/,$//' | fzy --prompt="Selecciona el disco al que quieres hacerle un backup --> " | awk '{print $1}') 
+disco=$(fdisk -l | grep -E "/dev/sd[a-z]:" | awk '{print $2,$3,$4}' | tr ":" "\t" | sed 's/,$//' | fzy --prompt="Selecciona el disco al que quieres hacerle un backup --> " | awk '{print $1}') 
 
 # Miramos si el disco que ha proporcionado el usuario existe en el equipo
 
@@ -101,9 +98,11 @@ se van a desmontar las particiones. ¿desea proseguir?[S/n]: \e[0m"; read user
         do
             if grep -q ${part[$disk]} /proc/mounts; then
                 umount "/dev/${part[$disk]}"	
-	    fi
+            fi
         done
+	
         
+      
         # Hacemos la copia de seguridad
 
         for X in $(seq 0 $((num_part-1)));
@@ -115,8 +114,25 @@ se van a desmontar las particiones. ¿desea proseguir?[S/n]: \e[0m"; read user
             fi
         done
     
-        exit 0
-    else  
+    	# Ahora depues de realizar la copia de seguridadm le mostramos al usuario un buscador para guardar las copias en el directorio deseado
+    	# y si no existe el directorio que se busca, se creara automaticamente y se moveran los archivos alli; se concatenara la fecha 
+
+    	dir_user=$(find /home /mnt /run/media /media -type d 2>/dev/null | fzy --prompt "Escoge un directorio para guardar las copias, si no existe se creara --> ")_$(date -I)
+
+		if [ -d $dir_user ]; then
+			rsync -r --progress *.gz *.img $dir_user
+			echo -e "\e[1;96mSincronizando...\e[0;"
+			sync
+			rm -rf *.gz *.img
+		else
+			mkdir -p $dir_user
+			rsync -r --progress *.gz *.img $dir_user
+			echo -e "\e[1;96mSincronizando...\e[0m"
+			sync
+			rm -rf *.gz *.img
+	    fi
+	        exit 0
+	else  
         echo -e "\e[1;91mAbortando...\e[0m"
         exit 1        
     fi
@@ -135,11 +151,25 @@ if [[ "$user" == "S" || "$user" == "s" || "$user" == "" ]]; then
             partclone.${tipo_part[$X]} -Ncs /dev/${part[$X]} | gzip -c > ${part[$X]}.pc.gz
         fi
     done
-    
+
+	dir_user=$(find /home /mnt /run/media /media -type d 2>/dev/null | fzy --prompt "Escoge un directorio para guardar las copias, si no existe se creara --> ")_$(date -I)
+
+	if [ -d $dir_user ]; then
+		rsync -r --progress *.gz *.img $dir_user
+		echo -e "\e[1;96mSincronizando...\e[0;"
+		sync
+		rm -rf *.gz *.img
+	else
+		mkdir -p $dir_user
+		rsync -r --progress *.gz *.img $dir_user
+		echo -e "\e[1;96mSincronizando...\e[0m"
+		sync
+		rm -rf *.gz *.img
+    fi
+
     exit 0
 
-elif [[ "$user" == "N" || "$user" == "n" ]]; then
-
+else
     echo -e "\e[1;91mAbortando...\e[0m"
     exit 1
 fi
