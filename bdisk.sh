@@ -32,7 +32,7 @@ fi
 # Primero le pedimos al usuario que introduzca el disco
 # al cual se le va a hacer la copia de seguridad
 
-disco=$(fdisk -l | grep -E "/dev/hd[a-z]:|/dev/sd[a-z]:|/dev/nvme0n[1-9]:" | awk '{print $2,$3,$4}' | tr ":" "\t" | sed 's/,$//' | fzf --reverse --prompt="Selecciona el disco al que quieres hacerle un backup --> " | awk '{print $1}')
+disco=$(fdisk -l | grep -E "/dev/hd[a-z]:|/dev/sd[a-z]:|/dev/nvme0n[1-9]:" | awk '{print $2,$3,$4}' | tr ":" "\t" | sed 's/,$//' | fzy --prompt="Selecciona el disco al que quieres hacerle un backup --> " | awk '{print $1}')
 
 # Miramos si el disco que ha proporcionado el usuario existe en el equipo
 
@@ -87,7 +87,7 @@ if [ $aviso_montaje != 0 ]; then
     se van a desmontar las particiones. ¿desea proseguir?[S/n]: \e[0m"; read user
     if [[ "$user" == "S" || "$user" == "s" || "$user" == "" ]]; then
         
-        dir_user=$(find /home /mnt /run/media /media -type d 2>/dev/null | fzf --reverse --prompt "Escoge un directorio para guardar las copias, si no existe se creara --> ")_$(date -I)
+        dir_user=$(find /home /mnt /run/media /media -type d 2>/dev/null | fzy --prompt "Escoge un directorio para guardar las copias, si no existe se creara --> ")_$(date -I)
         
         if [ -d $dir_user ]; then
             cd $dir_user
@@ -98,7 +98,7 @@ if [ $aviso_montaje != 0 ]; then
             
             crear_backup $disco $disco_f $tipo_tabla
         else
-            mkdir- p $dir_user
+            mkdir -p $dir_user
             cd $dir_user
             crear_backup $disco $disco_f $tipo_tabla
         fi
@@ -131,14 +131,14 @@ if [ $aviso_montaje != 0 ]; then
 fi
 
 echo -en "\e[1m¿Desea realizar la copia de las siguientes particiones? [S/n]: \e[0m"; read user
-dir_user=$(find /home /mnt /run/media /media -type d 2>/dev/null | fzf --reverse --prompt "Escoge un directorio para guardar las copias, si no existe se creara --> ")_$(date -I)
+dir_user=$(find /home /mnt /run/media /media -type d 2>/dev/null | fzy --prompt "Escoge un directorio para guardar las copias, si no existe se creara --> ")_$(date -I)
 
 if [[ "$user" == "S" || "$user" == "s" || "$user" == "" ]]; then
 	if [ -d $dir_user ]; then
 	    cd $dir_user            
 	    crear_backup $disco $disco_f $tipo_tabla
 	else
-	    mkdir- p $dir_user
+	    mkdir -p $dir_user
     	cd $dir_user
 	    crear_backup $disco $disco_f $tipo_tabla
 	fi
