@@ -87,7 +87,7 @@ if [ $aviso_montaje != 0 ]; then
     se van a desmontar las particiones. ¿desea proseguir?[S/n]: \e[0m"; read user
     if [[ "$user" == "S" || "$user" == "s" || "$user" == "" ]]; then
         
-        dir_user=$(find /home /mnt /run/media /media -type d 2>/dev/null | fzy --prompt "Escoge un directorio para guardar las copias, si no existe se creara --> ")_$(date -I)
+        dir_user=$(find /home /mnt /run /media -type d 2>/dev/null | fzy --prompt "Escoge un directorio para guardar las copias, si no existe se creara --> ")_$(date -I)
         
         if [ -d $dir_user ]; then
             cd $dir_user
@@ -131,7 +131,7 @@ if [ $aviso_montaje != 0 ]; then
 fi
 
 echo -en "\e[1m¿Desea realizar la copia de las siguientes particiones? [S/n]: \e[0m"; read user
-dir_user=$(find /home /mnt /run/media /media -type d 2>/dev/null | fzy --prompt "Escoge un directorio para guardar las copias, si no existe se creara --> ")_$(date -I)
+dir_user=$(find /home /mnt /run /media -type d 2>/dev/null | fzy --prompt "Escoge un directorio para guardar las copias, si no existe se creara --> ")_$(date -I)
 
 if [[ "$user" == "S" || "$user" == "s" || "$user" == "" ]]; then
 	if [ -d $dir_user ]; then
