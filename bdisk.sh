@@ -59,9 +59,11 @@ echo ""
 
 for disk in $(seq 0 $(($num_part-1)));
 do
-    if [ "${tipo_part[$disk]}" == "" ]; then
-        tipo_part[$disk]="desconocido"
-    fi
+    [ "${tipo_part[$disk]}" == "" ] && tipo_part[$disk]="desconocido"
+    
+    #  if [ "${tipo_part[$disk]}" == "" ]; then
+    #    tipo_part[$disk]="desconocido"
+    #  fi
     
     # Aqui se comprueba si la particion esta montada o no, debido a que si esta montada, partclone no podra
     # realizar correctamente la copia de seguridad del disco duro por este motivo
