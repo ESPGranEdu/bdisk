@@ -1,8 +1,0 @@
-TODO:  
-# Detectar que particiones estan montadas, y desmontarla a la hora de realizar la copia de seguridad --->        IMPLEMENTADO
-
-# Arreglar el bug a la hora de crear la tabla de particiones, que estando ya creada sigue creando la copia -->   ARREGLADO
-
-# Realizar la copia de la particion, independientemente de que se desconozca el tipo --->                        IMPLEMENTADO
-
-# Añadir modulo que compruebe las dependencias que faltan e instalarlas según la distribucion --->               EN PROCESO...

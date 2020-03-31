@@ -1,25 +1,19 @@
+#!/usr/bin/env bash
 # Aqui iran las funciones que se cargaran al script para añadir modularidad
 
-function comprobar() {
-    lsblk $1 &> /dev/null
-    
-    if [ $(echo $?) != 0 ]; then
-        echo -e "\e[1;91mEl disco no existe, abortando...\e[0m"
-        exit 1
-    fi
-    
-}
+function crear_backup() {
+    disk="$1"
+    partition="$2"
+    partition_table_type="$3"
 
-function crear_backup(){
-    if [ -f "Tabla_particiones_$2.img" ]; then
-        echo -e "\e[1;33mYa existe la tabla de particiones del disco $1\e[0m"
+    if [ -f "partition_table_$partition.img" ]; then
+        return
     else
-        if [ "$3" == "gpt" ]; then
-            dd if=$1 of="Tabla_particiones_$2.img" bs=512 count=34 &> /dev/null
-        elif [ "$3" == "dos" ]; then
-            dd if=$1 of="Tabla_particiones_$2.img" bs=512 count=1 &> /dev/null
+        if [ "$partition_table_type" == "gpt" ]; then
+            dd if="$disk" of="partition_table_$partition.img" bs=512 count=34 &>/dev/null
+        elif [ "$partition_table_type" == "dos" ]; then
+            dd if="$disk" of="partition_table_$partition.img" bs=512 count=1 &>/dev/null
         fi
-    	echo -e "\e[1;92mCreada copia de la tabla de particiones del disco\e[0m \e[1;93m$1\e[0m"
+        echo -e "\e[1;92mCreada copia de la tabla de particiones del disco\e[0m \e[1;93m$disk\e[0m"
     fi
 }
-
