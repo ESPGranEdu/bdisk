@@ -3,8 +3,8 @@
 # Limpiamos el contenido de la terminal actual para mayor visualizacion
 clear
 set -e # Bash estricto
+export FZF_DEFAULT_OPTS='--height 50% --reverse --multi --border' # Flags para fzf
 
-export FZF_DEFAULT_OPTS='--height 50% --reverse --multi --border'
 # Cargar el contenido de la carpeta modules
 for module in modules/*; do
     source "$module"
@@ -22,9 +22,9 @@ disk=$(
 mounted=0
 partition_table_type=$(fdisk -l "$disk" | grep -oP "dos|gpt")
 diskf=$(echo "$disk" | cut -f3 -d/)
-part_num=$(lsblk -lf "$disk" | grep -cE "${diskf}[0-9]+")
-mapfile -t part < <(lsblk -lf "$disk" | grep -E "${diskf}[0-9]+" | awk '{print $1}')
-mapfile -t tipo_part < <(lsblk -lf "$disk" | grep -E "${diskf}[0-9]+" | awk '{print $2}')
+part_num=$(lsblk -lf "$disk" | grep -cE "${diskf}p?[0-9]+")
+mapfile -t part < <(lsblk -lf "$disk" | grep -E "${diskf}p?[0-9]+" | awk '{print $1}')
+mapfile -t tipo_part < <(lsblk -lf "$disk" | grep -E "${diskf}p?[0-9]+" | awk '{print $2}')
 
 # Antes de realizar el backup de las particiones, le mostramos al usuario las particiones
 # a las que se le va a hacer una copia de seguridad
@@ -34,7 +34,7 @@ echo
 # Le mostramos las particiones a las que se le va a hacer una copia de seguridad
 # y el tipo de la particion, si no se conoce el formato, se muestra "desconocido"
 
-for d in $(seq $((part_num - 1))); do
+for d in $(seq 0 $((part_num - 1))); do
     [ "${tipo_part[$d]}" == "" ] && tipo_part[$d]="desconocido"
 
     # Aqui se comprueba si la particion esta montada o no, debido a que si esta montada, partclone no podra
@@ -86,7 +86,7 @@ if [[ "$user" == @([sS]|[yY]|) ]]; then
     fi
 
     # Hacemos la copia de seguridad
-    for X in $(seq $((part_num - 1))); do
+    for X in $(seq 0 $((part_num - 1))); do
         if [ "${tipo_part[$X]}" == "desconocido" ]; then
             partclone.dd -Ns "/dev/${part[$X]}" | zstd -15 -z >"${part[$X]}.pc.zst"
         else
