@@ -56,7 +56,7 @@ echo
 
 if ((mounted != 0)); then
     echo -ne "\e[1;95mSe han detectado particiones montadas, si se desea realizar la copia de seguridad
-    se van a desmontar las particiones. ¿desea proseguir?[S/n]: \e[0m"
+se van a desmontar las particiones. ¿desea proseguir?[S/n]: \e[0m"
     read -r user
 else
     echo -ne "\e[1m¿Desea realizar la copia de las siguientes particiones? [S/n]: \e[0m"
