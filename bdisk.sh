@@ -3,7 +3,7 @@
 # Limpiamos el contenido de la terminal actual para mayor visualizacion
 clear
 set -e # Bash estricto
-export FZF_DEFAULT_OPTS='--height 50% --reverse --multi --border' # Flags para fzf
+export FZF_DEFAULT_OPTS='--height 50% --reverse --border' # Flags para fzf
 
 # Cargar el contenido de la carpeta modules
 for module in modules/*; do
